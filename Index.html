@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Smart Table Order</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f172a;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <iframe id="kasirApp" src="" allow="geolocation; camera; microphone; clipboard-read; clipboard-write; payment"></iframe>
+
+  <script>
+    (function() {
+      // 1. Tangkap parameter meja dari URL browser pelanggan
+      const params = new URLSearchParams(window.location.search);
+      const meja = params.get('meja') || params.get('table') || '01';
+
+      // 2. URL Google Apps Script Anda
+      const gasUrl = "https://script.google.com/macros/s/AKfycbznqhDmaLA3QHGJpEcYIOZ36OAVtB7R2HYUnb7aobxvousauRsY2nPeNgHpOeI80r2PAw/exec";
+
+      // 3. Masukkan ke iframe (Banner Google otomatis disembunyikan oleh Google)
+      document.getElementById('kasirApp').src = gasUrl + "?meja=" + encodeURIComponent(meja);
+    })();
+  </script>
+</body>
+</html>
