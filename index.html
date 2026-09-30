@@ -22,7 +22,6 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      /* Menggunakan 100dvh untuk mengatasi address bar Safari iOS & Android */
       height: 100dvh;
       overflow: hidden;
       background-color: #0f172a;
@@ -43,7 +42,7 @@
       opacity: 1;
     }
 
-    /* Splash Screen Sementara Selama Apps Script Booting */
+    /* Splash Screen Elegan Saat Apps Script Booting */
     #splashScreen {
       position: fixed;
       inset: 0;
@@ -137,6 +136,7 @@
 </head>
 <body>
 
+  <!-- Splash Screen -->
   <div id="splashScreen">
     <div class="splash-logo-circle">
       <svg viewBox="0 0 24 24">
@@ -157,16 +157,16 @@
 
   <script>
     (function() {
-      // 1. URL Apps Script WebApp Exec
-      var GAS_EXEC_URL = "https://script.google.com/macros/s/AKfycbx24ZBJ_WuNdqL6BTFsQqudrS21h_9xhsJtDCehNjjy5QLhp_tgTeD5vxD-J-JcA9GTgw/exec";
+      // 1. URL WebApp Apps Script Exec Anda
+      var GAS_EXEC_URL = "https://script.google.com/macros/s/AKfycbxw2qt2ueJeT_L4_B9GWMENaGOPrglQ0oA2PU37BK_9zVYuidpzXUYS-tbm16Jm00BlKw/exec";
 
-      // 2. Ekstraksi nomor meja dari URL browser (Query Params atau Hash)
+      // 2. Ekstraksi nomor meja dari URL browser (Query Params atau Hash QR)
       var currentUrl = new URL(window.location.href);
       var tableParam = currentUrl.searchParams.get('meja') || 
                        currentUrl.searchParams.get('table') || 
                        currentUrl.searchParams.get('m');
 
-      // Dukungan fallback jika format QR menggunakan hash: misal #meja=05 atau #05
+      // Dukungan format hash (#meja=05 atau #05)
       if (!tableParam && window.location.hash) {
         var hashClean = window.location.hash.replace('#', '');
         var hashMatch = hashClean.match(/(?:meja|table)=([^&]+)/i);
@@ -181,13 +181,13 @@
       var tableNumber = tableParam ? String(tableParam).trim() : '01';
       var tableFormatted = /^\d+$/.test(tableNumber) ? ('Meja ' + tableNumber.padStart(2, '0')) : tableNumber;
 
-      // Update teks di splash screen
+      // Update label di splash screen
       var splashTableEl = document.getElementById('splashTableLabel');
       if (splashTableEl) {
         splashTableEl.innerText = tableFormatted;
       }
 
-      // 3. Gabungkan seluruh query parameter agar tidak ada parameter yang hilang
+      // 3. Teruskan seluruh query parameter ke WebApp
       currentUrl.searchParams.set('meja', tableNumber);
       var targetSrc = GAS_EXEC_URL + '?' + currentUrl.searchParams.toString();
 
@@ -201,7 +201,7 @@
         iframe.classList.add('loaded');
         splash.classList.add('hide');
 
-        // Kirim postMessage sebagai jaminan sinkronisasi meja ke WebApp di dalam iframe
+        // Kirim postMessage sebagai jaminan sinkronisasi meja ke dalam iframe
         try {
           iframe.contentWindow.postMessage({ meja: tableFormatted, table: tableFormatted }, '*');
         } catch (e) {}
@@ -212,8 +212,8 @@
         setTimeout(hideSplash, 350);
       };
 
-      // Fallback timer maksimal 5 detik jika koneksi lambat agar splash tetap terbuka
-      setTimeout(hideSplash, 5000);
+      // Fallback timer maksimal 4.5 detik agar splash screen tidak menggantung
+      setTimeout(hideSplash, 4500);
 
       // Mulai memuat iframe
       iframe.src = targetSrc;
