@@ -8,23 +8,23 @@
   <!-- PWA & Mobile WebApp Capabilities -->
   <meta name="theme-color" content="#00454f">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="mobile-web-app-capable" content="yes">
 
   <style>
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
     }
 
     html, body {
-      margin: 0;
-      padding: 0;
       width: 100%;
       height: 100%;
       height: 100dvh;
       overflow: hidden;
-      background-color: #0f172a;
+      background-color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
@@ -34,119 +34,11 @@
       height: 100dvh;
       border: none;
       display: block;
-      opacity: 0;
-      transition: opacity 0.35s ease;
-    }
-
-    #appFrame.loaded {
-      opacity: 1;
-    }
-
-    /* Splash Screen Elegan Saat Apps Script Booting */
-    #splashScreen {
-      position: fixed;
-      inset: 0;
-      background: #0f172a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      color: #ffffff;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-
-    #splashScreen.hide {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .splash-logo-circle {
-      width: 76px;
-      height: 76px;
-      border-radius: 22px;
-      background: #0ba17b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 25px rgba(11, 161, 123, 0.4);
-      margin-bottom: 20px;
-      animation: pulseBrand 2s infinite ease-in-out;
-    }
-
-    .splash-logo-circle svg {
-      width: 40px;
-      height: 40px;
-      fill: #ffffff;
-    }
-
-    @keyframes pulseBrand {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-    }
-
-    .splash-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      margin: 0 0 6px 0;
-    }
-
-    .splash-table-tag {
-      display: inline-flex;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 4px 14px;
-      border-radius: 9999px;
-      font-size: 0.82rem;
-      color: #38bdf8;
-      font-weight: 600;
-      margin-bottom: 22px;
-    }
-
-    .splash-loader-bar {
-      width: 140px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 9999px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .splash-loader-bar::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 40%;
-      background: #0ba17b;
-      border-radius: 9999px;
-      animation: indetProgress 1.2s infinite ease-in-out;
-    }
-
-    @keyframes indetProgress {
-      0% { left: -40%; width: 40%; }
-      50% { left: 30%; width: 60%; }
-      100% { left: 100%; width: 40%; }
+      background-color: #ffffff;
     }
   </style>
 </head>
 <body>
-
-  <!-- Splash Screen -->
-  <div id="splashScreen">
-    <div class="splash-logo-circle">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
-      </svg>
-    </div>
-    <h2 class="splash-title">Smart Table Order</h2>
-    <div class="splash-table-tag" id="splashTableLabel">Memuat Meja...</div>
-    <div class="splash-loader-bar"></div>
-  </div>
 
   <iframe
     id="appFrame"
@@ -158,7 +50,7 @@
   <script>
     (function() {
       // 1. URL WebApp Apps Script Exec Anda
-      var GAS_EXEC_URL = "https://script.google.com/macros/s/AKfycbzVwMKvhc_TeY5TMY7z07h_vMAM2gK4fWBW_bhZBuortVVD_PawKcpZCeD9bYwKdBSMPA/exec";
+      var GAS_EXEC_URL = "https://script.google.com/macros/s/AKfycbwap6K0GrnGNJwQJjrac4nHz5cdfeRc6B5GczN6lS40E5nTP-RhqAbRBJ4U65mnVDYkVA/exec";
 
       // 2. Ekstraksi nomor meja dari URL browser (Query Params atau Hash QR)
       var currentUrl = new URL(window.location.href);
@@ -177,46 +69,26 @@
         }
       }
 
-      // Format nomor meja default
+      // Format nomor meja default jika tidak ada di URL
       var tableNumber = tableParam ? String(tableParam).trim() : '01';
       var tableFormatted = /^\d+$/.test(tableNumber) ? ('Meja ' + tableNumber.padStart(2, '0')) : tableNumber;
-
-      // Update label di splash screen
-      var splashTableEl = document.getElementById('splashTableLabel');
-      if (splashTableEl) {
-        splashTableEl.innerText = tableFormatted;
-      }
 
       // 3. Teruskan seluruh query parameter ke WebApp
       currentUrl.searchParams.set('meja', tableNumber);
       var targetSrc = GAS_EXEC_URL + '?' + currentUrl.searchParams.toString();
 
+      // 4. Set src iframe secara langsung
       var iframe = document.getElementById('appFrame');
-      var splash = document.getElementById('splashScreen');
+      if (iframe) {
+        iframe.src = targetSrc;
 
-      var hasLoaded = false;
-      function hideSplash() {
-        if (hasLoaded) return;
-        hasLoaded = true;
-        iframe.classList.add('loaded');
-        splash.classList.add('hide');
-
-        // Kirim postMessage sebagai jaminan sinkronisasi meja ke dalam iframe
-        try {
-          iframe.contentWindow.postMessage({ meja: tableFormatted, table: tableFormatted }, '*');
-        } catch (e) {}
+        // PostMessage jaminan nomor meja saat iframe selesai memuat
+        iframe.onload = function() {
+          try {
+            iframe.contentWindow.postMessage({ meja: tableFormatted, table: tableFormatted }, '*');
+          } catch (e) {}
+        };
       }
-
-      // 4. Deteksi saat Apps Script selesai memuat
-      iframe.onload = function() {
-        setTimeout(hideSplash, 350);
-      };
-
-      // Fallback timer maksimal 4.5 detik agar splash screen tidak menggantung
-      setTimeout(hideSplash, 4500);
-
-      // Mulai memuat iframe
-      iframe.src = targetSrc;
     })();
   </script>
 </body>
